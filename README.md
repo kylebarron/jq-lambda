@@ -6,7 +6,7 @@ jq lambda layer
 
 | Region    | ARN                                                     |
 |-----------|---------------------------------------------------------|
-| us-east-1 | arn:aws:lambda:us-east-1:961053664803:layer:jq-lambda:1 |
+| us-east-1 | arn:aws:lambda:us-east-1:961053664803:layer:jq-lambda:2 |
 
 Uses jq version 1.6 as of 2020-03-03.
 
@@ -16,8 +16,9 @@ Since `jq` is written in portable C, this is actually really easy.
 
 ```bash
 link="$(curl -s https://api.github.com/repos/stedolan/jq/releases/latest | jq '.assets[] | if .name == "jq-linux64" then . else empty end | .browser_download_url' | tr -d \")"
-wget $link -O jq-linux64
-zip jq-lambda jq-linux64
+wget $link -O jq
+chmod +x jq
+zip jq-lambda jq
 ```
 
 Now use the AWS CLI to upload a new lambda layer. Choose the desired region.
@@ -35,7 +36,7 @@ aws lambda add-layer-version-permission \
     --region "$REGION" \
     --layer-name jq-lambda \
 	--statement-id public \
-    --version-number 1 \
+    --version-number 2 \
     --principal '*' \
 	--action lambda:GetLayerVersion
 ```
